@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chat</title>
+</head>
+<body>
+
+<input type="text" id="massage" placeholder="Enter massage" autocomplete="off">
+<button id="submit">Send</button>
+<ul id="massages"></ul>
+
+
+
+
+<script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-database.js"></script>
+
+
+<script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-analytics.js"></script>
+
+
+
+
+<script>
+
+
+
+  var firebaseConfig = {
+    apiKey: "AIzaSyD6Kf3_vXiTe9kplqb7HUqEk6ZoSLdUD78",
+    authDomain: "my-o-47ebf.firebaseapp.com",
+    databaseURL: "https://my-o-47ebf.firebaseio.com",
+    projectId: "my-o-47ebf",
+    storageBucket: "my-o-47ebf.appspot.com",
+    messagingSenderId: "583489410263",
+    appId: "1:583489410263:web:1f513a43c8d9d7a4950c92",
+    measurementId: "G-DYD0GX1XLH"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  
+var myName=prompt('Ввидите ваше имя',)
+  document.getElementById('submit').onclick=function(){
+var massage=document.getElementById('massage').value;
+document.getElementById('massage').value='';
+firebase.database().ref('messsages').push().set({
+"sender":myName,
+"massage":massage
+})
+console.log('сообщения отправленно')
+  }
+
+  firebase.database().ref('messsages').on('child_added',
+  function(snapshot){
+var html='';
+html +="<li>";
+html+="<li id='massage"+snapshot.key+ "'>"
+html+=snapshot.val().sender+';'+snapshot.val().massage;
+if(snapshot.val().sender==myName){
+html+="<button data-id='"+snapshot.key+"'onclick='deleteMessage(this);'>"
+html+="Delete";
+html+="</button>";
+
+}
+html+="</li>";
+document.getElementById('massages').innerHTML+=html;
+
+
+  })
+
+
+function deleteMessage(self){
+    var massageId=self.getAttribute("data-id");
+    console.log(massageId)
+    firebase.database().ref('messsages/'+massageId).remove();
+}
+
+firebase.database().ref('messsages').on('child_removed',
+  function(snapshot){
+    document.getElementById('massage'+snapshot.key).innerHTML='это сообщения удаленно'
+
+  })
+
+</script>
+</body>
+</html>
